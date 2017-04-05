@@ -1,0 +1,28 @@
+{
+  "name": "voixspace",
+  "version": "0.1.0",
+  "description": "A visualization of anonymously posted thoughts floating in 3d space.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tomeglenn/voixspace.git"
+  },
+  "keywords": [
+    "3d",
+    "visualization",
+    "social",
+    "experiment"
+  ],
+  "author": "Tom Glenn, Angus Todd, Amandine Eap, Alan Thom",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tomeglenn/voixspace/issues"
+  },
+  "homepage": "https://github.com/tomeglenn/voixspace#readme",
+  "dependencies": {
+    "express": "^4.15.2"
+  }
+}
