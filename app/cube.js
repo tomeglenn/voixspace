@@ -1,3 +1,5 @@
+import clickNode from './interactions';
+
 export default function cube() {
   var scene = new THREE.Scene();
   var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
@@ -25,6 +27,6 @@ export default function cube() {
 
   var domEvents = new THREEx.DomEvents(camera, renderer.domElement);
   domEvents.addEventListener(cube, 'click', function (event) {
-    getMessage();
+    clickNode(cube);
   });
 }

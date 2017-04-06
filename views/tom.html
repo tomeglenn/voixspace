@@ -4,8 +4,14 @@
   <script src="/dist/bundle.js"></script>
 {% endblock %}
 {% block body %}
-<div id="postMessage">
-  <input id="messageInput" type="text" placeholder="Hello world" />
-  <button type="submit" onclick="postMessage()">Post</button>
+<div class="overlay"></div>
+<div class="modal">
+  <div class="content">
+    <div id="postMessage">
+      <h1>Post Message</h1>
+      <input id="messageInput" type="text" placeholder="Hello world" />
+      <button type="submit" id="postMessageButton">Post</button>
+    </div>
+  </div>
 </div>
 {% endblock %}
