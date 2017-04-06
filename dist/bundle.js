@@ -73,7 +73,7 @@
 "use strict";
 
 
-var bind = __webpack_require__(6);
+var bind = __webpack_require__(7);
 
 /*global toString:true*/
 
@@ -398,10 +398,10 @@ function getDefaultAdapter() {
   var adapter;
   if (typeof XMLHttpRequest !== 'undefined') {
     // For browsers use XHR adapter
-    adapter = __webpack_require__(2);
+    adapter = __webpack_require__(3);
   } else if (typeof process !== 'undefined') {
     // For node use HTTP adapter
-    adapter = __webpack_require__(2);
+    adapter = __webpack_require__(3);
   }
   return adapter;
 }
@@ -471,10 +471,16 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 
 module.exports = defaults;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(8)))
 
 /***/ }),
 /* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(11);
+
+/***/ }),
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -485,7 +491,7 @@ var settle = __webpack_require__(17);
 var buildURL = __webpack_require__(20);
 var parseHeaders = __webpack_require__(26);
 var isURLSameOrigin = __webpack_require__(24);
-var createError = __webpack_require__(5);
+var createError = __webpack_require__(6);
 var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(19);
 
 module.exports = function xhrAdapter(config) {
@@ -658,10 +664,10 @@ module.exports = function xhrAdapter(config) {
   });
 };
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(8)))
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -687,7 +693,7 @@ module.exports = Cancel;
 
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -699,7 +705,7 @@ module.exports = function isCancel(value) {
 
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -723,7 +729,7 @@ module.exports = function createError(message, config, code, response) {
 
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -741,7 +747,7 @@ module.exports = function bind(fn, thisArg) {
 
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -927,11 +933,45 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 8 */,
 /* 9 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-module.exports = __webpack_require__(11);
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_axios__);
+
+
+const ENDPOINTS = {
+  MESSAGE: '/api/message'
+};
+
+class ApiResource
+{
+  get() {
+    __WEBPACK_IMPORTED_MODULE_0_axios___default.a.get(ENDPOINTS.MESSAGE)
+    .then(function (res) {
+      console.log(res);
+    })
+    .catch(function (err) {
+      console.log(err);
+    });
+  }
+
+  post(message) {
+    __WEBPACK_IMPORTED_MODULE_0_axios___default.a.post(ENDPOINTS.MESSAGE, {
+      message: message
+    })
+    .then(function (res) {
+      console.log(res);
+    })
+    .catch(function (err) {
+      console.log(err);
+    });
+  }
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = ApiResource;
+
+
 
 /***/ }),
 /* 10 */
@@ -939,57 +979,139 @@ module.exports = __webpack_require__(11);
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__apiResource__ = __webpack_require__(31);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_axios__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__apiResource__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_axios__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_axios__);
 
 
 
+var mouseX = 0;
+var mouseY = 0;
+var windowHalfX = window.innerWidth / 2;
+var windowHalfY = window.innerHeight / 2;
+
+var radius = 100, theta = 0;
+
+var birds = [];
+var boids = [];
+var boid;
+
 class App {
   constructor() {
+    
     this.apiResource = new __WEBPACK_IMPORTED_MODULE_0__apiResource__["a" /* default */]();
 
     this.scene = new THREE.Scene();
-    this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    this.scene.background = new THREE.Color( 0x0F6A7A );
+    this.scene.add( new THREE.AmbientLight( 0xffffff, 0.3 ) );
+
+    this.camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 1000 );
+    this.camera.position.x = 0;
+    this.camera.position.z = -5;
+    
+    this.controls = new THREE.TrackballControls(this.camera);
+    this.controls.rotateSpeed = 10.0;
+    this.controls.zoomSpeed = 10;
+    this.controls.noZoom = false;
+    this.controls.noPan = true;
+    this.controls.staticMoving = true;
+    this.controls.dynamicDampingFactor = 1;
+    this.controls.keys = [ 65, 83, 68 ];
+    // this.controls.addEventListener( 'change', this.render );
+
     this.renderer = new THREE.WebGLRenderer();
     this.renderer.setSize( window.innerWidth, window.innerHeight );
-
-    this.camera.position.z = 5;
   }
 
-  addCube() {
-    var geometry = new THREE.BoxGeometry(1, 1, 1);
-    var material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
-    this.cube = new THREE.Mesh(geometry, material);
-    this.scene.add(this.cube);
+  addStars(){
+    var stars = [];
+    var geometry = new THREE.SphereBufferGeometry( 0.2, 64, 32 );
+    var material = new THREE.MeshBasicMaterial( { color: 0x32A188, wireframe: true } );
+    
+    for(var i=0; i<1000; i++){
+      var star = new THREE.Mesh( geometry, material );
+      star.position.x = Math.random() * 360 - 180;
+      star.position.y = Math.random() * 360 - 180;
+      star.position.z = Math.random() * 360 - 180;
+      star.scale.x = star.scale.y = star.scale.z = Math.random() * 3 + 1;
+
+      this.scene.add( star );
+      stars[i] = star;
+    }
   }
 
-  render() {
-    requestAnimationFrame(this.render.bind(this));
-
-    this.cube.rotation.x = Date.now() * 0.0005;
-    this.cube.rotation.y = Date.now() * 0.0001;
-
-    this.renderer.render(this.scene, this.camera);
+  addBirds(){
+    for ( var i = 0; i < 200; i ++ ) {
+        boid = boids[ i ] = new Boid();
+        boid.position.x = Math.random() * 400 - 200;
+        boid.position.y = Math.random() * 400 - 200;
+        boid.position.z = Math.random() * 400 - 200;
+        boid.velocity.x = Math.random() * 2 - 1;
+        boid.velocity.y = Math.random() * 2 - 1;
+        boid.velocity.z = Math.random() * 2 - 1;
+        boid.setAvoidWalls( true );
+        boid.setWorldSize( 500, 500, 400 );
+        var bird = birds[ i ] = new THREE.Mesh( new Bird(), new THREE.MeshBasicMaterial( { color:Math.random() * 0xffffff, side: THREE.DoubleSide } ) );
+        bird.phase = Math.floor( Math.random() * 62.83 );
+        this.scene.add( bird );
+      }
   }
+
+  animate(){
+      // CAMERA DRAG
+      requestAnimationFrame( this.animate.bind(this) );
+      this.controls.update();
+      
+      this.renderer.render(this.scene, this.camera);
+
+      // CAMERA SPAN
+      theta += 0.01;
+      this.camera.position.x = radius * Math.sin( THREE.Math.degToRad( theta ) );
+      this.camera.position.y = radius * Math.sin( THREE.Math.degToRad( theta ) );
+      this.camera.position.z = radius * Math.cos( THREE.Math.degToRad( theta ) );
+      
+      // ANIMATE BIRDS
+      for ( var i = 0, il = birds.length; i < il; i++ ) {
+          boid = boids[ i ];
+          boid.run( boids );
+          var bird = birds[ i ];
+          bird.position.copy( boids[ i ].position );
+          var color = bird.material.color;
+          color.r = color.g = color.b = ( 500 - bird.position.z ) / 1000;
+          bird.rotation.y = Math.atan2( - boid.velocity.z, boid.velocity.x );
+          bird.rotation.z = Math.asin( boid.velocity.y / boid.velocity.length() );
+          bird.phase = ( bird.phase + ( Math.max( 0, bird.rotation.z ) + 0.1 )  ) % 62.83;
+          bird.geometry.vertices[ 5 ].y = bird.geometry.vertices[ 4 ].y = Math.sin( bird.phase ) * 5;
+      }
+  }
+
+  // onWindowResize(){
+  //   this.camera.aspect = window.innerWidth / window.innerHeight;
+  //   this.camera.updateProjectionMatrix();
+  //   this.renderer.setSize( window.innerWidth, window.innerHeight );
+  //   this.controls.handleResize();
+  //   this.render();
+  // }
 
   addToDom() {
     document.body.appendChild(this.renderer.domElement);
+    // window.addEventListener( 'resize', this.onWindowResize, false );
   }
 
   registerDomEvents() {
     var domEvents = new THREEx.DomEvents(this.camera, this.renderer.domElement);
-    domEvents.addEventListener(this.cube, 'click', function (event) {
+    domEvents.addEventListener(this.star, 'click', function (event) {
       event.target.material.color.setHex(0x0000ff);
       this.apiResource.get();
     }.bind(this));
   }
 
   init() {
-    this.addCube();
+    this.addStars();
+    this.addBirds();  
     this.addToDom();
-    this.registerDomEvents();
-    this.render();
+    this.animate();
+    // this.registerDomEvents();
   }
 }
 /* harmony export (immutable) */ __webpack_exports__["App"] = App;
@@ -1009,7 +1131,7 @@ window.onload = function() {
 
 
 var utils = __webpack_require__(0);
-var bind = __webpack_require__(6);
+var bind = __webpack_require__(7);
 var Axios = __webpack_require__(13);
 var defaults = __webpack_require__(1);
 
@@ -1044,9 +1166,9 @@ axios.create = function create(instanceConfig) {
 };
 
 // Expose Cancel & CancelToken
-axios.Cancel = __webpack_require__(3);
+axios.Cancel = __webpack_require__(4);
 axios.CancelToken = __webpack_require__(12);
-axios.isCancel = __webpack_require__(4);
+axios.isCancel = __webpack_require__(5);
 
 // Expose all/spread
 axios.all = function all(promises) {
@@ -1067,7 +1189,7 @@ module.exports.default = axios;
 "use strict";
 
 
-var Cancel = __webpack_require__(3);
+var Cancel = __webpack_require__(4);
 
 /**
  * A `CancelToken` is an object that can be used to request cancellation of an operation.
@@ -1284,7 +1406,7 @@ module.exports = InterceptorManager;
 
 var utils = __webpack_require__(0);
 var transformData = __webpack_require__(18);
-var isCancel = __webpack_require__(4);
+var isCancel = __webpack_require__(5);
 var defaults = __webpack_require__(1);
 
 /**
@@ -1394,7 +1516,7 @@ module.exports = function enhanceError(error, config, code, response) {
 "use strict";
 
 
-var createError = __webpack_require__(5);
+var createError = __webpack_require__(6);
 
 /**
  * Resolve or reject a Promise based on response status.
@@ -1836,50 +1958,6 @@ module.exports = function spread(callback) {
     return callback.apply(null, arr);
   };
 };
-
-
-/***/ }),
-/* 28 */,
-/* 29 */,
-/* 30 */,
-/* 31 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios__ = __webpack_require__(9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_axios__);
-
-
-const ENDPOINTS = {
-  MESSAGE: '/api/message'
-};
-
-class ApiResource
-{
-  get() {
-    __WEBPACK_IMPORTED_MODULE_0_axios___default.a.get(ENDPOINTS.MESSAGE)
-    .then(function (res) {
-      console.log(res);
-    })
-    .catch(function (err) {
-      console.log(err);
-    });
-  }
-
-  post(message) {
-    __WEBPACK_IMPORTED_MODULE_0_axios___default.a.post(ENDPOINTS.MESSAGE, {
-      message: message
-    })
-    .then(function (res) {
-      console.log(res);
-    })
-    .catch(function (err) {
-      console.log(err);
-    });
-  }
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = ApiResource;
-
 
 
 /***/ })
