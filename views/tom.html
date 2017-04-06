@@ -25,8 +25,13 @@
 
       	renderer.render( scene, camera );
       }
-
       render();
+
+      var domEvents = new THREEx.DomEvents(camera, renderer.domElement);
+      domEvents.addEventListener(cube, 'click', function (event) {
+        cube.material.color.setHex(0x0000ff);
+        console.log('You clicked me!!');
+      });
     };
   </script>
 {% endblock %}
