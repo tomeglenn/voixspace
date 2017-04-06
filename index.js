@@ -16,6 +16,7 @@ app.engine('html', twig.__express);
 
 app.use(bodyParser.json());
 app.use('/public', express.static('public'));
+app.use('/dist', express.static('dist'));
 app.use('/', homeRouter);
 app.use('/api', apiRouter);
 
