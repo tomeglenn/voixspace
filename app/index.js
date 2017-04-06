@@ -13,7 +13,7 @@ export default class App {
     constructor() {   
     
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color( 0x0F6A7A );
+    this.scene.background = new THREE.Color( 0x242038 );
     this.scene.add( new THREE.AmbientLight( 0xffffff, 0.3 ) );
 
     this.camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 1000 );
@@ -36,9 +36,9 @@ export default class App {
   addStars(){
     var stars = [];
     var geometry = new THREE.SphereBufferGeometry( 0.2, 64, 32 );
-    var material = new THREE.MeshBasicMaterial( { color: 0x32A188, wireframe: true } );
+    var material = new THREE.MeshBasicMaterial( { color: 0xB7ADCF, wireframe: true } );
     
-    for(var i=0; i<1000; i++){
+    for(var i=0; i<300; i++){
       var star = new THREE.Mesh( geometry, material );
       star.position.x = Math.random() * 360 - 180;
       star.position.y = Math.random() * 360 - 180;
@@ -51,7 +51,7 @@ export default class App {
   }
 
   addBirds(){
-    for ( var i = 0; i < 200; i ++ ) {
+    for ( var i = 0; i < 150; i ++ ) {
         boid = boids[ i ] = new Boid();
         boid.position.x = Math.random() * 400 - 200;
         boid.position.y = Math.random() * 400 - 200;
@@ -61,7 +61,7 @@ export default class App {
         boid.velocity.z = Math.random() * 2 - 1;
         boid.setAvoidWalls( true );
         boid.setWorldSize( 500, 500, 400 );
-        var bird = birds[ i ] = new THREE.Mesh( new Bird(), new THREE.MeshBasicMaterial( { color:Math.random() * 0xffffff, side: THREE.DoubleSide } ) );
+        var bird = birds[ i ] = new THREE.Mesh( new Bird(), new THREE.MeshBasicMaterial( { color:0x4F646F, side: THREE.DoubleSide } ) );
         bird.phase = Math.floor( Math.random() * 62.83 );
         this.scene.add( bird );
       }
@@ -87,7 +87,7 @@ export default class App {
           var bird = birds[ i ];
           bird.position.copy( boids[ i ].position );
           var color = bird.material.color;
-          color.r = color.g = color.b = ( 500 - bird.position.z ) / 1000;
+          //color.r = color.g = color.b; //= ( 500 - bird.position.z ) / 1000;
           bird.rotation.y = Math.atan2( - boid.velocity.z, boid.velocity.x );
           bird.rotation.z = Math.asin( boid.velocity.y / boid.velocity.length() );
           bird.phase = ( bird.phase + ( Math.max( 0, bird.rotation.z ) + 0.1 )  ) % 62.83;
