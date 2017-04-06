@@ -1,30 +1,54 @@
 var express = require('express');
 var router = express.Router();
+var mongoose = require('mongoose');
+var Message = require('../models/message');
+
+router.use(function (req, res, next) {
+  if (!mongoose.connection.readyState) {
+    return res.status(500).json({ status: 'error', message: 'Unable to connect to database' });
+  }
+
+  return next();
+});
 
 router.get('/message', function (req, res) {
-  var messages = [
-    [
-      { message: 'Believe you can and you\'re halfway there.', date: Date.now() },
-      { message: 'Awesome quote!!', date: Date.now() },
-    ],
-    [
-      { message: 'Hey guys!!! This is cool!', date: Date.now() }
-    ],
-    [
-      { message: 'Hello world!!!!!!', date: Date.now() }
-    ]
-  ];
+  Message.random(function (err, message) {
+    if (err) {
+      return console.log('ERROR: ' + err);
+    }
 
-  var message = messages[Math.floor(Math.random() * messages.length)];
-  res.json(message);
+    return res.json(message);
+  });
 });
 
 router.post('/message', function (req, res) {
-  res.status(200).json({ status: 'success' });
+  var message = new Message();
+  message.messages.push({ body: req.body.message });
+
+  message.save(function (err, message) {
+    if (err) {
+      return res.status(400).json({ status: 'error', message: err });
+    }
+
+    return res.status(200).json(message);
+  });
 });
 
 router.put('/message/:id', function (req, res) {
-  res.status(200).json({ status: 'success' });
+  var message = Message.findOne({ _id: req.params.id }, function (err, message) {
+    if (err) {
+      return res.status(404).json({ status: 'error', message: err });
+    }
+
+    message.messages.push({ body: req.body.message });
+    message.save(function (err, message) {
+      if (err) {
+        return res.status(400).json({ status: 'error', message: err });
+      }
+
+      return res.status(200).json(message);
+    });
+  });
 });
 
 module.exports = router;
