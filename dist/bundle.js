@@ -1838,6 +1838,10 @@ var _message = __webpack_require__(8);
 
 var _message2 = _interopRequireDefault(_message);
 
+var _post = __webpack_require__(29);
+
+var _post2 = _interopRequireDefault(_post);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -1864,7 +1868,7 @@ var App = function () {
 
     this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
     this.camera.position.x = 0;
-    this.camera.position.z = -5;
+    this.camera.position.z = 5;
 
     this.renderer = new THREE.WebGLRenderer();
     this.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -1872,16 +1876,17 @@ var App = function () {
     var windowResize = new THREEx.WindowResize(this.renderer, this.camera);
 
     this.messageComponent = new _message2.default();
+    this.postComponent = new _post2.default();
   }
 
   _createClass(App, [{
     key: 'addStars',
     value: function addStars() {
-      var stars = [];
       var geometry = new THREE.SphereBufferGeometry(0.2, 64, 32);
-      var material = new THREE.MeshBasicMaterial({ color: 0xB7ADCF, wireframe: true });
-
+      var material = new THREE.MeshBasicMaterial({ color: 0xb7adcf });
+      var stars = [];
       for (var i = 0; i < 300; i++) {
+
         var star = new THREE.Mesh(geometry, material);
         star.position.x = Math.random() * 360 - 180;
         star.position.y = Math.random() * 360 - 180;
@@ -1920,9 +1925,9 @@ var App = function () {
       }
     }
   }, {
-    key: 'animate',
-    value: function animate() {
-      requestAnimationFrame(this.animate.bind(this));
+    key: 'render',
+    value: function render() {
+      requestAnimationFrame(this.render.bind(this));
 
       theta += 0.01;
       this.camera.position.x = radius * Math.sin(THREE.Math.degToRad(theta));
@@ -1952,12 +1957,21 @@ var App = function () {
       }.bind(this));
     }
   }, {
+    key: 'registerPostButtonDomEvent',
+    value: function registerPostButtonDomEvent() {
+      document.getElementById('postButton').addEventListener('click', function (event) {
+        this.postComponent.show();
+      }.bind(this));
+    }
+  }, {
     key: 'init',
     value: function init() {
+      this.registerPostButtonDomEvent();
+
       this.addStars();
       this.addBirds();
       this.addToDom();
-      this.animate();
+      this.render();
     }
   }]);
 
@@ -2006,6 +2020,76 @@ function postMessage(message) {
 
 exports.getMessage = getMessage;
 exports.postMessage = postMessage;
+
+/***/ }),
+/* 29 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _api = __webpack_require__(28);
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var PostComponent = function () {
+  function PostComponent() {
+    _classCallCheck(this, PostComponent);
+
+    this.modal = document.getElementById('postMessageModal');
+    this.postInput = document.getElementById('postInput');
+
+    this.postInput.addEventListener('click', function (event) {
+      event.cancelBubble = true;
+    });
+
+    this.modal.addEventListener('click', function (event) {
+      this.hide();
+    }.bind(this));
+
+    this.postInput.addEventListener('keyup', function (event) {
+      if (event.keyCode == 13) {
+        (0, _api.postMessage)(this.postInput.value).then(function (res) {
+          this.postInput.value = '';
+          this.postInput.placeholder = 'Message successfully sent!';
+          this.hide();
+        }.bind(this)).catch(function (err) {
+          console.log(err);
+        });
+      }
+    }.bind(this));
+  }
+
+  _createClass(PostComponent, [{
+    key: 'show',
+    value: function show() {
+      this.modal.classList.remove('hidden');
+      this.modal.classList.add('visible');
+
+      this.postInput.placeholder = 'What\'s on your mind?';
+
+      setTimeout(function () {
+        this.postInput.focus();
+      }, 500);
+    }
+  }, {
+    key: 'hide',
+    value: function hide() {
+      this.modal.classList.remove('visible');
+      this.modal.classList.add('hidden');
+    }
+  }]);
+
+  return PostComponent;
+}();
+
+exports.default = PostComponent;
 
 /***/ })
 /******/ ]);

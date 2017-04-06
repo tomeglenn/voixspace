@@ -2,15 +2,25 @@
 
 {% block body %}
   <div id="app"></div>
+  <div id="postButtonContainer">
+      <a href="#" id="postButton">
+        <span class="fa-stack fa-lg">
+          <i class="fa fa-circle fa-stack-2x"></i>
+          <i class="fa fa-send fa-stack-1x fa-inverse"></i>
+        </span>
+      </a>
+  </div>
   <div id="postMessageModal" class="overlay hidden">
     <div class="modal">
-      I'm the post message modal
+      <span class="table-align">
+        <input id="postInput" type="text" />
+      </span>
     </div>
   </div>
 
   <div id="showMessageModal" class="overlay hidden">
     <div class="modal">
-      <span id="message"></span>
+      <span id="message" class="table-align"></span>
     </div>
   </div>
   

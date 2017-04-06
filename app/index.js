@@ -1,4 +1,5 @@
 import MessageComponent from './components/message';
+import PostComponent from './components/post';
 
 var mouseX = 0;
 var mouseY = 0;
@@ -20,7 +21,7 @@ export default class App {
 
     this.camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 1000 );
     this.camera.position.x = 0;
-    this.camera.position.z = -5;
+    this.camera.position.z = 5;
 
     this.renderer = new THREE.WebGLRenderer();
     this.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -28,14 +29,15 @@ export default class App {
     var windowResize = new THREEx.WindowResize(this.renderer, this.camera);
 
     this.messageComponent = new MessageComponent();
+    this.postComponent = new PostComponent();
   }
 
   addStars(){
-    var stars = [];
     var geometry = new THREE.SphereBufferGeometry( 0.2, 64, 32 );
-    var material = new THREE.MeshBasicMaterial( { color: 0xB7ADCF, wireframe: true } );
-
+    var material = new THREE.MeshBasicMaterial( { color: 0xb7adcf, } );
+    var stars = [];
     for(var i=0; i<300; i++){
+
       var star = new THREE.Mesh( geometry, material );
       star.position.x = Math.random() * 360 - 180;
       star.position.y = Math.random() * 360 - 180;
@@ -79,8 +81,8 @@ export default class App {
       }
   }
 
-  animate(){
-      requestAnimationFrame( this.animate.bind(this) );
+  render(){
+      requestAnimationFrame(this.render.bind(this));
 
       theta += 0.01;
       this.camera.position.x = radius * Math.sin( THREE.Math.degToRad( theta ) );
@@ -108,11 +110,19 @@ export default class App {
     }.bind(this));
   }
 
+  registerPostButtonDomEvent() {
+    document.getElementById('postButton').addEventListener('click', function (event) {
+      this.postComponent.show();
+    }.bind(this));
+  }
+
   init() {
+    this.registerPostButtonDomEvent();
+
     this.addStars();
     this.addBirds();
     this.addToDom();
-    this.animate();
+    this.render();
   }
 }
 
