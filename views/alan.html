@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 
 {% block head %}
+
   <script>
     window.onload = function () {
       var scene = new THREE.Scene();
@@ -10,25 +11,59 @@
       renderer.setSize( window.innerWidth, window.innerHeight );
       document.body.appendChild( renderer.domElement );
 
-      var geometry = new THREE.BoxGeometry( 1, 1, 1 );
-      var material = new THREE.MeshBasicMaterial( { color: 0x00ff00, wireframe: true } );
+      var group = new THREE.Group();
+      var geometry = new THREE.BoxGeometry( 10, 10, 10 );
+      var material = new THREE.MeshNormalMaterial( { color: 0x000000, wireframe: false } );
       var cube = new THREE.Mesh( geometry, material );
-      scene.add( cube );
+      
+      for ( var i = 0; i < 1000; i ++ ) {
+					var mesh = new THREE.Mesh( geometry, material );
+					mesh.position.x = Math.random() * 2000 - 1000;
+					mesh.position.y = Math.random() * 2000 - 1000;
+					mesh.position.z = Math.random() * 2000 - 1000;
+					mesh.rotation.x = Math.random() * 2 * Math.PI;
+					mesh.rotation.y = Math.random() * 2 * Math.PI;
+					mesh.matrixAutoUpdate = false;
+					mesh.updateMatrix();
+					group.add( mesh );
+				}
+				
+        scene.add( group );
 
-      camera.position.z = 5;
+       camera.position.z = 50;
+
+      // document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 
       function render() {
+        var timer = Date.now() * 0.00001;
       	requestAnimationFrame( render );
+        // renderer.setClearColor( 0xffffff );
+        renderer.setSize( window.innerWidth, window.innerHeight );
 
-        cube.rotation.x = Date.now() * 0.0005;
-        cube.rotation.y = Date.now() * 0.0001;
+        for ( var i = 0, l = scene.children.length; i < l; i ++ ) {
+					var object = scene.children[ i ];
+					object.rotation.x = timer * 5;
+					object.rotation.y = timer * 2.5;
+				}
 
       	renderer.render( scene, camera );
       }
 
+      function onDocumentMouseMove(event) {
+        var windowHalfX = window.innerWidth / 2;
+			  var windowHalfY = window.innerHeight / 2;
+
+				mouseX = ( event.clientX - windowHalfX ) * 10;
+				mouseY = ( event.clientY - windowHalfY ) * 10;
+
+        camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+			}
+
       render();
     };
   </script>
+
 {% endblock %}
 {% block body %}
 {% endblock %}
