@@ -5,7 +5,13 @@ var Message = require('../models/message');
 
 router.use(function (req, res, next) {
   if (!mongoose.connection.readyState) {
-    return res.status(500).json({ status: 'error', message: 'Unable to connect to database' });
+    return res.status(200).json({
+      '_id': '1234567890',
+      '__v': 1,
+      'messages': [
+        { 'body': 'This is a dummy response. Mongoose is not connected :(', date: Date.now() }
+      ]
+    });
   }
 
   return next();
