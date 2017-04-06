@@ -9,7 +9,7 @@ router.use(function (req, res, next) {
       '_id': '1234567890',
       '__v': 1,
       'messages': [
-        { 'body': 'This is a dummy response. Mongoose is not connected :(', date: Date.now() }
+        { 'body': 'This is a dummy response.', date: Date.now() }
       ]
     });
   }

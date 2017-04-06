@@ -948,6 +948,7 @@ var MessageComponent = function () {
     _classCallCheck(this, MessageComponent);
 
     this.modal = document.getElementById('showMessageModal');
+    this.message = document.getElementById('message');
 
     this.modal.addEventListener('click', function (event) {
       this.hide();
@@ -960,7 +961,14 @@ var MessageComponent = function () {
       (0, _api.getMessage)().then(function (res) {
         this.modal.classList.remove('hidden');
         this.modal.classList.add('visible');
-        document.getElementById('message').innerText = res.data.messages[0].body;
+
+        this.message.innerHTML = '';
+        res.data.messages.forEach(function (message) {
+          var div = document.createElement('span');
+          div.classList.add('message');
+          div.textContent = message.body;
+          document.getElementById('message').appendChild(div);
+        });
       }.bind(this)).catch(function (err) {
         console.log(err);
       });
@@ -1854,7 +1862,7 @@ var windowHalfY = window.innerHeight / 2;
 var radius = 100,
     theta = 0;
 
-var birds = [];
+var nodes = [];
 var boids = [];
 var boid;
 
@@ -1898,8 +1906,8 @@ var App = function () {
       }
     }
   }, {
-    key: 'addBirds',
-    value: function addBirds() {
+    key: 'addNodes',
+    value: function addNodes() {
       var colors = [0x4d65a7, 0x71a097, 0xd2b68b, 0xc27b79, 0xb34849];
 
       for (var i = 0; i < 150; i++) {
@@ -1915,13 +1923,12 @@ var App = function () {
 
         var size = (Math.random() * (5.0 - 2.0) + 2.0).toFixed(4);
         var color = colors[Math.floor(Math.random() * colors.length)];
-        var geometry = new THREE.SphereGeometry(size, 24, 24);
-        var material = new THREE.MeshBasicMaterial({ color: color, side: THREE.DoubleSide });
+        var geometry = new THREE.SphereGeometry(size, 6, 6);
+        var material = new THREE.MeshBasicMaterial({ color: color, side: THREE.DoubleSide, wireframe: true });
 
-        var bird = birds[i] = new THREE.Mesh(geometry, material);
-        this.scene.add(bird);
-
-        this.registerDomEvents(bird);
+        var node = nodes[i] = new THREE.Mesh(geometry, material);
+        this.scene.add(node);
+        this.registerDomEvents(node);
       }
     }
   }, {
@@ -1934,11 +1941,13 @@ var App = function () {
       this.camera.position.y = radius * Math.sin(THREE.Math.degToRad(theta));
       this.camera.position.z = radius * Math.cos(THREE.Math.degToRad(theta));
 
-      for (var i = 0, il = birds.length; i < il; i++) {
+      for (var i = 0, il = nodes.length; i < il; i++) {
         boid = boids[i];
         boid.run(boids);
-        var bird = birds[i];
-        bird.position.copy(boids[i].position);
+        var node = nodes[i];
+        node.position.copy(boids[i].position);
+        node.rotation.x += 0.01;
+        node.rotation.y += 0.005;
       }
 
       this.renderer.render(this.scene, this.camera);
@@ -1969,7 +1978,7 @@ var App = function () {
       this.registerPostButtonDomEvent();
 
       this.addStars();
-      this.addBirds();
+      this.addNodes();
       this.addToDom();
       this.render();
     }

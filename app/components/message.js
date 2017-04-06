@@ -3,6 +3,7 @@ import { getMessage } from '../resources/api';
 export default class MessageComponent {
   constructor() {
     this.modal = document.getElementById('showMessageModal');
+    this.message = document.getElementById('message');
 
     this.modal.addEventListener('click', function (event) {
       this.hide();
@@ -14,7 +15,15 @@ export default class MessageComponent {
     .then(function (res) {
       this.modal.classList.remove('hidden');
       this.modal.classList.add('visible');
-      document.getElementById('message').innerText = res.data.messages[0].body;
+
+      this.message.innerHTML = '';
+      res.data.messages.forEach(function (message) {
+        var div = document.createElement('span');
+        div.classList.add('message');
+        div.textContent = message.body;
+        document.getElementById('message').appendChild(div);
+      });
+
     }.bind(this))
     .catch(function (err) {
       console.log(err);

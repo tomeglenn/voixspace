@@ -8,7 +8,7 @@ var windowHalfY = window.innerHeight / 2;
 
 var radius = 100, theta = 0;
 
-var birds = [];
+var nodes = [];
 var boids = [];
 var boid;
 
@@ -49,7 +49,7 @@ export default class App {
     }
   }
 
-  addBirds(){
+  addNodes(){
     var colors = [
       0x4d65a7,
       0x71a097,
@@ -71,13 +71,12 @@ export default class App {
 
         var size = (Math.random() * (5.0 - 2.0) + 2.0).toFixed(4);
         var color = colors[Math.floor(Math.random() * colors.length)];
-        var geometry = new THREE.SphereGeometry(size, 24, 24);
-        var material = new THREE.MeshBasicMaterial({ color: color, side: THREE.DoubleSide });
+        var geometry = new THREE.SphereGeometry(size, 6, 6);
+        var material = new THREE.MeshBasicMaterial({ color: color, side: THREE.DoubleSide, wireframe: true });
 
-        var bird = birds[ i ] = new THREE.Mesh(geometry, material);
-        this.scene.add( bird );
-
-        this.registerDomEvents(bird);
+        var node = nodes[ i ] = new THREE.Mesh(geometry, material);
+        this.scene.add(node);
+        this.registerDomEvents(node);
       }
   }
 
@@ -89,11 +88,13 @@ export default class App {
       this.camera.position.y = radius * Math.sin( THREE.Math.degToRad( theta ) );
       this.camera.position.z = radius * Math.cos( THREE.Math.degToRad( theta ) );
 
-      for ( var i = 0, il = birds.length; i < il; i++ ) {
+      for ( var i = 0, il = nodes.length; i < il; i++ ) {
           boid = boids[ i ];
           boid.run( boids );
-          var bird = birds[ i ];
-          bird.position.copy( boids[ i ].position );
+          var node = nodes[ i ];
+          node.position.copy( boids[ i ].position );
+          node.rotation.x += 0.01;
+          node.rotation.y += 0.005;
       }
 
       this.renderer.render(this.scene, this.camera);
@@ -120,7 +121,7 @@ export default class App {
     this.registerPostButtonDomEvent();
 
     this.addStars();
-    this.addBirds();
+    this.addNodes();
     this.addToDom();
     this.render();
   }

@@ -1,7 +1,7 @@
 var Boid = function() {
     var vector = new THREE.Vector3(),
     _acceleration, _width = 500, _height = 500, _depth = 200, _goal, _neighborhoodRadius = 100,
-    _maxSpeed = 0.2, _maxSteerForce = 0.05, _avoidWalls = false;
+    _maxSpeed = 0.2, _maxSteerForce = 0.0, _avoidWalls = true;
     this.position = new THREE.Vector3();
     this.velocity = new THREE.Vector3();
     _acceleration = new THREE.Vector3();
@@ -86,7 +86,7 @@ var Boid = function() {
     };
     this.repulse = function ( target ) {
         var distance = this.position.distanceTo( target );
-        if ( distance < 150 ) {
+        if ( distance < 10 ) {
             var steer = new THREE.Vector3();
             steer.subVectors( this.position, target );
             steer.multiplyScalar( 0.5 / distance );
