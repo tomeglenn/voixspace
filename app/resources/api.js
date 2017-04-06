@@ -4,27 +4,14 @@ const ENDPOINTS = {
   MESSAGE: '/api/message'
 };
 
-export default class ApiResource
-{
-  get() {
-    axios.get(ENDPOINTS.MESSAGE)
-    .then(function (res) {
-      console.log(res);
-    })
-    .catch(function (err) {
-      console.log(err);
-    });
-  }
-
-  post(message) {
-    axios.post(ENDPOINTS.MESSAGE, {
-      message: message
-    })
-    .then(function (res) {
-      console.log(res);
-    })
-    .catch(function (err) {
-      console.log(err);
-    });
-  }
+function getMessage() {
+  return axios.get(ENDPOINTS.MESSAGE);
 }
+
+function postMessage(message) {
+  return axios.post(ENDPOINTS.MESSAGE, {
+    message: message
+  });
+}
+
+export { getMessage, postMessage };

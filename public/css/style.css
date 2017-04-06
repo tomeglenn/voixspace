@@ -12,7 +12,7 @@ body {
 }
 
 .overlay {
-  display: none;
+  visibility: hidden;
   position: absolute;
   top: 0;
   left: 0;
@@ -23,7 +23,6 @@ body {
 }
 
 .modal {
-  display: none;
   width: 300px;
   height: 200px;
   position: fixed;

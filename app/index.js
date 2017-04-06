@@ -1,11 +1,14 @@
+import MessageComponent from './components/message';
+
 export default class App {
   constructor() {
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     this.renderer = new THREE.WebGLRenderer();
     this.renderer.setSize( window.innerWidth, window.innerHeight );
-
     this.camera.position.z = 5;
+
+    this.messageComponent = new MessageComponent();
   }
 
   addCube() {
@@ -31,7 +34,7 @@ export default class App {
   registerDomEvents() {
     var domEvents = new THREEx.DomEvents(this.camera, this.renderer.domElement);
     domEvents.addEventListener(this.cube, 'click', function (event) {
-      event.target.material.color.setHex(0x0000ff);
+      this.messageComponent.show();
     }.bind(this));
   }
 

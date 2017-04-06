@@ -1,16 +1,19 @@
+import { getMessage } from '../resources/api';
+
 export default class MessageComponent {
   constructor() {
-    this.overlay = document.getElementById('overlay');
-    this.modal = document.getElementById('messageContainer');
+    this.modal = document.getElementById('showMessageModal');
+
+    this.modal.addEventListener('click', function (event) {
+      this.hide();
+    }.bind(this));
   }
 
   show() {
-    this.overlay.style.display = 'block';
-    this.modal.style.display = 'block';
+    this.modal.style.visibility = 'visible';
   }
 
   hide() {
-    this.overlay.style.display = 'none';
-    this.modal.style.display = 'none';
+    this.modal.style.visibility = 'hidden';
   }
 }
