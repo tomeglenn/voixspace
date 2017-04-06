@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/tomeglenn/voixspace#readme",
   "dependencies": {
-    "express": "^4.15.2"
+    "express": "^4.15.2",
+    "twig": "^1.10.4"
   }
 }
