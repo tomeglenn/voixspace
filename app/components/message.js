@@ -10,10 +10,19 @@ export default class MessageComponent {
   }
 
   show() {
-    this.modal.style.visibility = 'visible';
+    getMessage()
+    .then(function (res) {
+      this.modal.classList.remove('hidden');
+      this.modal.classList.add('visible');
+      document.getElementById('message').innerText = res.data.messages[0].body;
+    }.bind(this))
+    .catch(function (err) {
+      console.log(err);
+    });
   }
 
   hide() {
-    this.modal.style.visibility = 'hidden';
+    this.modal.classList.remove('visible');
+    this.modal.classList.add('hidden');
   }
 }

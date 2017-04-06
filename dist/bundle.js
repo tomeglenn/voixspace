@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
+/******/ 	return __webpack_require__(__webpack_require__.s = 27);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -73,212 +73,7 @@
 "use strict";
 
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _message = __webpack_require__(1);
-
-var _message2 = _interopRequireDefault(_message);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var mouseX = 0;
-var mouseY = 0;
-var windowHalfX = window.innerWidth / 2;
-var windowHalfY = window.innerHeight / 2;
-
-var radius = 100,
-    theta = 0;
-
-var birds = [];
-var boids = [];
-var boid;
-
-var App = function () {
-  function App() {
-    _classCallCheck(this, App);
-
-    this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0x242038);
-    this.scene.add(new THREE.AmbientLight(0xffffff, 0.3));
-
-    this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
-    this.camera.position.x = 0;
-    this.camera.position.z = -5;
-
-    // this.controls = new THREE.TrackballControls(this.camera);
-    // this.controls.rotateSpeed = 10.0;
-    // this.controls.zoomSpeed = 10;
-    // this.controls.noZoom = false;
-    // this.controls.noPan = true;
-    // this.controls.staticMoving = true;
-    // this.controls.dynamicDampingFactor = 1;
-    // this.controls.keys = [ 65, 83, 68 ];
-
-    this.renderer = new THREE.WebGLRenderer();
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
-
-    this.messageComponent = new _message2.default();
-  }
-
-  _createClass(App, [{
-    key: 'addStars',
-    value: function addStars() {
-      var stars = [];
-      var geometry = new THREE.SphereBufferGeometry(0.2, 64, 32);
-      var material = new THREE.MeshBasicMaterial({ color: 0xB7ADCF, wireframe: true });
-
-      for (var i = 0; i < 300; i++) {
-        var star = new THREE.Mesh(geometry, material);
-        star.position.x = Math.random() * 360 - 180;
-        star.position.y = Math.random() * 360 - 180;
-        star.position.z = Math.random() * 360 - 180;
-        star.scale.x = star.scale.y = star.scale.z = Math.random() * 3 + 1;
-
-        this.scene.add(star);
-        stars[i] = star;
-      }
-    }
-  }, {
-    key: 'addBirds',
-    value: function addBirds() {
-      for (var i = 0; i < 150; i++) {
-        boid = boids[i] = new Boid();
-        boid.position.x = Math.random() * 400 - 200;
-        boid.position.y = Math.random() * 400 - 200;
-        boid.position.z = Math.random() * 400 - 200;
-        boid.velocity.x = Math.random() * 2 - 1;
-        boid.velocity.y = Math.random() * 2 - 1;
-        boid.velocity.z = Math.random() * 2 - 1;
-        boid.setAvoidWalls(true);
-        boid.setWorldSize(500, 500, 400);
-        var bird = birds[i] = new THREE.Mesh(new Bird(), new THREE.MeshBasicMaterial({ color: 0x4F646F, side: THREE.DoubleSide }));
-        bird.phase = Math.floor(Math.random() * 62.83);
-        this.scene.add(bird);
-      }
-    }
-  }, {
-    key: 'animate',
-    value: function animate() {
-      // CAMERA DRAG
-      requestAnimationFrame(this.animate.bind(this));
-      // this.controls.update();
-
-      this.renderer.render(this.scene, this.camera);
-
-      // CAMERA SPAN
-      theta += 0.01;
-      this.camera.position.x = radius * Math.sin(THREE.Math.degToRad(theta));
-      this.camera.position.y = radius * Math.sin(THREE.Math.degToRad(theta));
-      this.camera.position.z = radius * Math.cos(THREE.Math.degToRad(theta));
-
-      // ANIMATE BIRDS
-      for (var i = 0, il = birds.length; i < il; i++) {
-        boid = boids[i];
-        boid.run(boids);
-        var bird = birds[i];
-        bird.position.copy(boids[i].position);
-        var color = bird.material.color;
-        //color.r = color.g = color.b; //= ( 500 - bird.position.z ) / 1000;
-        bird.rotation.y = Math.atan2(-boid.velocity.z, boid.velocity.x);
-        bird.rotation.z = Math.asin(boid.velocity.y / boid.velocity.length());
-        bird.phase = (bird.phase + (Math.max(0, bird.rotation.z) + 0.1)) % 62.83;
-        bird.geometry.vertices[5].y = bird.geometry.vertices[4].y = Math.sin(bird.phase) * 5;
-      }
-    }
-  }, {
-    key: 'addToDom',
-    value: function addToDom() {
-      document.body.appendChild(this.renderer.domElement);
-    }
-  }, {
-    key: 'registerDomEvents',
-    value: function registerDomEvents() {
-      var domEvents = new THREEx.DomEvents(this.camera, this.renderer.domElement);
-      domEvents.addEventListener(this.cube, 'click', function (event) {
-        this.messageComponent.show();
-      }.bind(this));
-    }
-  }, {
-    key: 'init',
-    value: function init() {
-      this.addStars();
-      this.addBirds();
-      this.addToDom();
-      this.animate();
-      // this.registerDomEvents();
-    }
-  }]);
-
-  return App;
-}();
-
-exports.default = App;
-
-
-window.onload = function () {
-  var app = new App();
-  app.init();
-};
-
-/***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _api = __webpack_require__(28);
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var MessageComponent = function () {
-  function MessageComponent() {
-    _classCallCheck(this, MessageComponent);
-
-    this.modal = document.getElementById('showMessageModal');
-
-    this.modal.addEventListener('click', function (event) {
-      this.hide();
-    }.bind(this));
-  }
-
-  _createClass(MessageComponent, [{
-    key: 'show',
-    value: function show() {
-      this.modal.style.visibility = 'visible';
-    }
-  }, {
-    key: 'hide',
-    value: function hide() {
-      this.modal.style.visibility = 'hidden';
-    }
-  }]);
-
-  return MessageComponent;
-}();
-
-exports.default = MessageComponent;
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var bind = __webpack_require__(8);
+var bind = __webpack_require__(6);
 
 /*global toString:true*/
 
@@ -580,14 +375,14 @@ module.exports = {
 
 
 /***/ }),
-/* 3 */
+/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(process) {
 
-var utils = __webpack_require__(2);
-var normalizeHeaderName = __webpack_require__(25);
+var utils = __webpack_require__(0);
+var normalizeHeaderName = __webpack_require__(24);
 
 var DEFAULT_CONTENT_TYPE = {
   'Content-Type': 'application/x-www-form-urlencoded'
@@ -603,10 +398,10 @@ function getDefaultAdapter() {
   var adapter;
   if (typeof XMLHttpRequest !== 'undefined') {
     // For browsers use XHR adapter
-    adapter = __webpack_require__(4);
+    adapter = __webpack_require__(2);
   } else if (typeof process !== 'undefined') {
     // For node use HTTP adapter
-    adapter = __webpack_require__(4);
+    adapter = __webpack_require__(2);
   }
   return adapter;
 }
@@ -676,22 +471,22 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 
 module.exports = defaults;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7)))
 
 /***/ }),
-/* 4 */
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(process) {
 
-var utils = __webpack_require__(2);
-var settle = __webpack_require__(17);
-var buildURL = __webpack_require__(20);
-var parseHeaders = __webpack_require__(26);
-var isURLSameOrigin = __webpack_require__(24);
-var createError = __webpack_require__(7);
-var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(19);
+var utils = __webpack_require__(0);
+var settle = __webpack_require__(16);
+var buildURL = __webpack_require__(19);
+var parseHeaders = __webpack_require__(25);
+var isURLSameOrigin = __webpack_require__(23);
+var createError = __webpack_require__(5);
+var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(18);
 
 module.exports = function xhrAdapter(config) {
   return new Promise(function dispatchXhrRequest(resolve, reject) {
@@ -787,7 +582,7 @@ module.exports = function xhrAdapter(config) {
     // This is only done if running in a standard browser environment.
     // Specifically not if we're in a web worker, or react-native.
     if (utils.isStandardBrowserEnv()) {
-      var cookies = __webpack_require__(22);
+      var cookies = __webpack_require__(21);
 
       // Add xsrf header
       var xsrfValue = (config.withCredentials || isURLSameOrigin(config.url)) && config.xsrfCookieName ?
@@ -863,10 +658,10 @@ module.exports = function xhrAdapter(config) {
   });
 };
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7)))
 
 /***/ }),
-/* 5 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -892,7 +687,7 @@ module.exports = Cancel;
 
 
 /***/ }),
-/* 6 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -904,13 +699,13 @@ module.exports = function isCancel(value) {
 
 
 /***/ }),
-/* 7 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var enhanceError = __webpack_require__(16);
+var enhanceError = __webpack_require__(15);
 
 /**
  * Create an Error with the specified message, config, error code, and response.
@@ -928,7 +723,7 @@ module.exports = function createError(message, config, code, response) {
 
 
 /***/ }),
-/* 8 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -946,7 +741,7 @@ module.exports = function bind(fn, thisArg) {
 
 
 /***/ }),
-/* 9 */
+/* 7 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -1132,22 +927,74 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(11);
-
-/***/ }),
-/* 11 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var utils = __webpack_require__(2);
-var bind = __webpack_require__(8);
-var Axios = __webpack_require__(13);
-var defaults = __webpack_require__(3);
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _api = __webpack_require__(28);
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var MessageComponent = function () {
+  function MessageComponent() {
+    _classCallCheck(this, MessageComponent);
+
+    this.modal = document.getElementById('showMessageModal');
+
+    this.modal.addEventListener('click', function (event) {
+      this.hide();
+    }.bind(this));
+  }
+
+  _createClass(MessageComponent, [{
+    key: 'show',
+    value: function show() {
+      (0, _api.getMessage)().then(function (res) {
+        this.modal.classList.remove('hidden');
+        this.modal.classList.add('visible');
+        document.getElementById('message').innerText = res.data.messages[0].body;
+      }.bind(this)).catch(function (err) {
+        console.log(err);
+      });
+    }
+  }, {
+    key: 'hide',
+    value: function hide() {
+      this.modal.classList.remove('visible');
+      this.modal.classList.add('hidden');
+    }
+  }]);
+
+  return MessageComponent;
+}();
+
+exports.default = MessageComponent;
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(10);
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var utils = __webpack_require__(0);
+var bind = __webpack_require__(6);
+var Axios = __webpack_require__(12);
+var defaults = __webpack_require__(1);
 
 /**
  * Create an instance of Axios
@@ -1180,15 +1027,15 @@ axios.create = function create(instanceConfig) {
 };
 
 // Expose Cancel & CancelToken
-axios.Cancel = __webpack_require__(5);
-axios.CancelToken = __webpack_require__(12);
-axios.isCancel = __webpack_require__(6);
+axios.Cancel = __webpack_require__(3);
+axios.CancelToken = __webpack_require__(11);
+axios.isCancel = __webpack_require__(4);
 
 // Expose all/spread
 axios.all = function all(promises) {
   return Promise.all(promises);
 };
-axios.spread = __webpack_require__(27);
+axios.spread = __webpack_require__(26);
 
 module.exports = axios;
 
@@ -1197,13 +1044,13 @@ module.exports.default = axios;
 
 
 /***/ }),
-/* 12 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var Cancel = __webpack_require__(5);
+var Cancel = __webpack_require__(3);
 
 /**
  * A `CancelToken` is an object that can be used to request cancellation of an operation.
@@ -1261,18 +1108,18 @@ module.exports = CancelToken;
 
 
 /***/ }),
-/* 13 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var defaults = __webpack_require__(3);
-var utils = __webpack_require__(2);
-var InterceptorManager = __webpack_require__(14);
-var dispatchRequest = __webpack_require__(15);
-var isAbsoluteURL = __webpack_require__(23);
-var combineURLs = __webpack_require__(21);
+var defaults = __webpack_require__(1);
+var utils = __webpack_require__(0);
+var InterceptorManager = __webpack_require__(13);
+var dispatchRequest = __webpack_require__(14);
+var isAbsoluteURL = __webpack_require__(22);
+var combineURLs = __webpack_require__(20);
 
 /**
  * Create a new instance of Axios
@@ -1353,13 +1200,13 @@ module.exports = Axios;
 
 
 /***/ }),
-/* 14 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var utils = __webpack_require__(2);
+var utils = __webpack_require__(0);
 
 function InterceptorManager() {
   this.handlers = [];
@@ -1412,16 +1259,16 @@ module.exports = InterceptorManager;
 
 
 /***/ }),
-/* 15 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var utils = __webpack_require__(2);
-var transformData = __webpack_require__(18);
-var isCancel = __webpack_require__(6);
-var defaults = __webpack_require__(3);
+var utils = __webpack_require__(0);
+var transformData = __webpack_require__(17);
+var isCancel = __webpack_require__(4);
+var defaults = __webpack_require__(1);
 
 /**
  * Throws a `Cancel` if cancellation has been requested.
@@ -1498,7 +1345,7 @@ module.exports = function dispatchRequest(config) {
 
 
 /***/ }),
-/* 16 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1524,13 +1371,13 @@ module.exports = function enhanceError(error, config, code, response) {
 
 
 /***/ }),
-/* 17 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var createError = __webpack_require__(7);
+var createError = __webpack_require__(5);
 
 /**
  * Resolve or reject a Promise based on response status.
@@ -1556,13 +1403,13 @@ module.exports = function settle(resolve, reject, response) {
 
 
 /***/ }),
-/* 18 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var utils = __webpack_require__(2);
+var utils = __webpack_require__(0);
 
 /**
  * Transform the data for a request or a response
@@ -1583,7 +1430,7 @@ module.exports = function transformData(data, headers, fns) {
 
 
 /***/ }),
-/* 19 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1626,13 +1473,13 @@ module.exports = btoa;
 
 
 /***/ }),
-/* 20 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var utils = __webpack_require__(2);
+var utils = __webpack_require__(0);
 
 function encode(val) {
   return encodeURIComponent(val).
@@ -1701,7 +1548,7 @@ module.exports = function buildURL(url, params, paramsSerializer) {
 
 
 /***/ }),
-/* 21 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1722,13 +1569,13 @@ module.exports = function combineURLs(baseURL, relativeURL) {
 
 
 /***/ }),
-/* 22 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var utils = __webpack_require__(2);
+var utils = __webpack_require__(0);
 
 module.exports = (
   utils.isStandardBrowserEnv() ?
@@ -1782,7 +1629,7 @@ module.exports = (
 
 
 /***/ }),
-/* 23 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1803,13 +1650,13 @@ module.exports = function isAbsoluteURL(url) {
 
 
 /***/ }),
-/* 24 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var utils = __webpack_require__(2);
+var utils = __webpack_require__(0);
 
 module.exports = (
   utils.isStandardBrowserEnv() ?
@@ -1878,13 +1725,13 @@ module.exports = (
 
 
 /***/ }),
-/* 25 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var utils = __webpack_require__(2);
+var utils = __webpack_require__(0);
 
 module.exports = function normalizeHeaderName(headers, normalizedName) {
   utils.forEach(headers, function processHeader(value, name) {
@@ -1897,13 +1744,13 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
 
 
 /***/ }),
-/* 26 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var utils = __webpack_require__(2);
+var utils = __webpack_require__(0);
 
 /**
  * Parse headers into an object
@@ -1941,7 +1788,7 @@ module.exports = function parseHeaders(headers) {
 
 
 /***/ }),
-/* 27 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1975,6 +1822,157 @@ module.exports = function spread(callback) {
 
 
 /***/ }),
+/* 27 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _message = __webpack_require__(8);
+
+var _message2 = _interopRequireDefault(_message);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var mouseX = 0;
+var mouseY = 0;
+var windowHalfX = window.innerWidth / 2;
+var windowHalfY = window.innerHeight / 2;
+
+var radius = 100,
+    theta = 0;
+
+var birds = [];
+var boids = [];
+var boid;
+
+var App = function () {
+  function App() {
+    _classCallCheck(this, App);
+
+    this.scene = new THREE.Scene();
+    this.scene.background = new THREE.Color(0x242038);
+    this.scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+
+    this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
+    this.camera.position.x = 0;
+    this.camera.position.z = -5;
+
+    this.renderer = new THREE.WebGLRenderer();
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
+
+    var windowResize = new THREEx.WindowResize(this.renderer, this.camera);
+
+    this.messageComponent = new _message2.default();
+  }
+
+  _createClass(App, [{
+    key: 'addStars',
+    value: function addStars() {
+      var stars = [];
+      var geometry = new THREE.SphereBufferGeometry(0.2, 64, 32);
+      var material = new THREE.MeshBasicMaterial({ color: 0xB7ADCF, wireframe: true });
+
+      for (var i = 0; i < 300; i++) {
+        var star = new THREE.Mesh(geometry, material);
+        star.position.x = Math.random() * 360 - 180;
+        star.position.y = Math.random() * 360 - 180;
+        star.position.z = Math.random() * 360 - 180;
+        star.scale.x = star.scale.y = star.scale.z = Math.random() * 3 + 1;
+
+        this.scene.add(star);
+        stars[i] = star;
+      }
+    }
+  }, {
+    key: 'addBirds',
+    value: function addBirds() {
+      var colors = [0x4d65a7, 0x71a097, 0xd2b68b, 0xc27b79, 0xb34849];
+
+      for (var i = 0; i < 150; i++) {
+        boid = boids[i] = new Boid();
+        boid.position.x = Math.random() * 400 - 200;
+        boid.position.y = Math.random() * 400 - 200;
+        boid.position.z = Math.random() * 400 - 200;
+        boid.velocity.x = Math.random() * 2 - 1;
+        boid.velocity.y = Math.random() * 2 - 1;
+        boid.velocity.z = Math.random() * 2 - 1;
+        boid.setAvoidWalls(true);
+        boid.setWorldSize(500, 500, 400);
+
+        var size = (Math.random() * (5.0 - 2.0) + 2.0).toFixed(4);
+        var color = colors[Math.floor(Math.random() * colors.length)];
+        var geometry = new THREE.SphereGeometry(size, 24, 24);
+        var material = new THREE.MeshBasicMaterial({ color: color, side: THREE.DoubleSide });
+
+        var bird = birds[i] = new THREE.Mesh(geometry, material);
+        this.scene.add(bird);
+
+        this.registerDomEvents(bird);
+      }
+    }
+  }, {
+    key: 'animate',
+    value: function animate() {
+      requestAnimationFrame(this.animate.bind(this));
+
+      theta += 0.01;
+      this.camera.position.x = radius * Math.sin(THREE.Math.degToRad(theta));
+      this.camera.position.y = radius * Math.sin(THREE.Math.degToRad(theta));
+      this.camera.position.z = radius * Math.cos(THREE.Math.degToRad(theta));
+
+      for (var i = 0, il = birds.length; i < il; i++) {
+        boid = boids[i];
+        boid.run(boids);
+        var bird = birds[i];
+        bird.position.copy(boids[i].position);
+      }
+
+      this.renderer.render(this.scene, this.camera);
+    }
+  }, {
+    key: 'addToDom',
+    value: function addToDom() {
+      document.body.appendChild(this.renderer.domElement);
+    }
+  }, {
+    key: 'registerDomEvents',
+    value: function registerDomEvents(mesh) {
+      var domEvents = new THREEx.DomEvents(this.camera, this.renderer.domElement);
+      domEvents.addEventListener(mesh, 'click', function (event) {
+        this.messageComponent.show();
+      }.bind(this));
+    }
+  }, {
+    key: 'init',
+    value: function init() {
+      this.addStars();
+      this.addBirds();
+      this.addToDom();
+      this.animate();
+    }
+  }]);
+
+  return App;
+}();
+
+exports.default = App;
+
+
+window.onload = function () {
+  var app = new App();
+  app.init();
+};
+
+/***/ }),
 /* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1986,7 +1984,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.postMessage = exports.getMessage = undefined;
 
-var _axios = __webpack_require__(10);
+var _axios = __webpack_require__(9);
 
 var _axios2 = _interopRequireDefault(_axios);
 

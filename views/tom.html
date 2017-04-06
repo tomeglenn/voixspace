@@ -2,18 +2,18 @@
 
 {% block body %}
   <div id="app"></div>
-  <div id="postMessageModal" class="overlay">
+  <div id="postMessageModal" class="overlay hidden">
     <div class="modal">
       I'm the post message modal
     </div>
   </div>
 
-  <div id="showMessageModal" class="overlay">
+  <div id="showMessageModal" class="overlay hidden">
     <div class="modal">
-      I'm the show message modal
+      <span id="message"></span>
     </div>
   </div>
-  <script src="/public/js/TrackballControls.js"></script>
+  
   <script src="/public/js/Detector.js"></script>
   <script src="/public/js/Bird.js"></script>
   <script src="/public/js/Boid.js"></script>
