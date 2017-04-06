@@ -4,7 +4,8 @@
   "description": "A visualization of anonymously posted thoughts floating in 3d space.",
   "main": "index.js",
   "scripts": {
-    "start": "npm-run-all --parallel watch:build watch:server",
+    "start": "node index.js",
+    "dev": "npm-run-all --parallel watch:build watch:server",
     "watch:build": "webpack --watch",
     "watch:server": "nodemon"
   },
