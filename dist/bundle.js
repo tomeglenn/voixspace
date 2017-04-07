@@ -1994,6 +1994,36 @@ var App = function () {
   }
 
   _createClass(App, [{
+    key: 'setBoidPosition',
+    value: function setBoidPosition(boid) {
+      boid.position.x = Math.random() * 400 - 200;
+      boid.position.y = Math.random() * 400 - 200;
+      boid.position.z = Math.random() * 400 - 200;
+      boid.velocity.x = Math.random() * 2 - 1;
+      boid.velocity.y = Math.random() * 2 - 1;
+      boid.velocity.z = Math.random() * 2 - 1;
+    }
+  }, {
+    key: 'setMeshState',
+    value: function setMeshState(mesh, isActive) {
+      if (isActive) {
+        mesh.material.wireframe = false;
+        mesh.material.transparent = true;
+        mesh.material.opacity = 0.5;
+        mesh.geometry = new THREE.TorusKnotGeometry(5, 5, 5, 2);
+
+        selectedNode = mesh;
+      } else {
+        mesh.material.wireframe = true;
+        mesh.material.transparent = false;
+        mesh.material.opacity = 1;
+        var size = (Math.random() * (5.0 - 2.0) + 2.0).toFixed(4);
+        mesh.geometry = new THREE.SphereGeometry(size, 6, 6);
+
+        selectedNode = null;
+      }
+    }
+  }, {
     key: 'addStars',
     value: function addStars() {
       var geometry = new THREE.SphereBufferGeometry(0.2, 64, 32);
@@ -2018,12 +2048,7 @@ var App = function () {
 
       for (var i = 0; i < 150; i++) {
         boid = boids[i] = new Boid();
-        boid.position.x = Math.random() * 400 - 200;
-        boid.position.y = Math.random() * 400 - 200;
-        boid.position.z = Math.random() * 400 - 200;
-        boid.velocity.x = Math.random() * 2 - 1;
-        boid.velocity.y = Math.random() * 2 - 1;
-        boid.velocity.z = Math.random() * 2 - 1;
+        this.setBoidPosition(boid);
         boid.setAvoidWalls(true);
         boid.setWorldSize(500, 500, 400);
 
@@ -2072,15 +2097,23 @@ var App = function () {
     value: function registerDomEvents(mesh) {
       var domEvents = new THREEx.DomEvents(this.camera, this.renderer.domElement);
       domEvents.addEventListener(mesh, 'click', function (event) {
+        mesh.material.transparent = true;
+        mesh.material.opacity = 0;
+        for (var i = 0; i < nodes.length; i++) {
+          if (nodes[i] == selectedNode) {
+            this.setBoidPosition(boids[i]);
+          }
+        }
+        this.setMeshState(mesh, false);
         this.messageComponent.show();
       }.bind(this));
+
       domEvents.addEventListener(mesh, 'mouseover', function (event) {
-        mesh.material.wireframe = false;
-        selectedNode = mesh;
+        this.setMeshState(mesh, true);
       }.bind(this));
+
       domEvents.addEventListener(mesh, 'mouseout', function (event) {
-        mesh.material.wireframe = true;
-        selectedNode = null;
+        this.setMeshState(mesh, false);
       }.bind(this));
     }
   }, {
