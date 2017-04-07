@@ -84,12 +84,11 @@ export default class App {
   render(){
       requestAnimationFrame(this.render.bind(this));
 
-      if(selectedNode === null){
+      if(selectedNode == null){
         theta += 0.01;
         this.camera.position.x = radius * Math.sin( THREE.Math.degToRad( theta ) );
         this.camera.position.y = radius * Math.sin( THREE.Math.degToRad( theta ) );
         this.camera.position.z = radius * Math.cos( THREE.Math.degToRad( theta ) );
-          theta += 0.01;
       }
 
       for ( var i = 0, il = nodes.length; i < il; i++ ) {
