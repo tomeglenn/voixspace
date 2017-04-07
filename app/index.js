@@ -109,15 +109,7 @@ export default class App {
     }.bind(this));
   }
 
-  registerPostButtonDomEvent() {
-    document.getElementById('postButton').addEventListener('click', function (event) {
-      this.postComponent.show();
-    }.bind(this));
-  }
-
   init() {
-    this.registerPostButtonDomEvent();
-
     this.addStars();
     this.addNodes();
     this.addToDom();

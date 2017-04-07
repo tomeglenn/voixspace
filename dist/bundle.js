@@ -987,8 +987,14 @@ var MessageComponent = function () {
     this.postInput = document.getElementById('postInput');
     this.replyBack = document.getElementById('reply-back');
     this.slideReply = document.getElementById('slide-reply');
+    this.postButton = document.getElementById('postButton');
+    this.closeButton = document.getElementById('closeButton');
 
-    this.modal.addEventListener('click', function (event) {
+    this.postButton.addEventListener('click', function (event) {
+      this.showReplyOnly();
+    }.bind(this));
+
+    this.closeButton.addEventListener('click', function (event) {
       this.hide();
     }.bind(this));
 
@@ -1015,7 +1021,8 @@ var MessageComponent = function () {
 
         this.clearSlides();
         this.postInput.placeholder = 'What would you like to add?';
-        this.slideReply.classList.remove('hide-reply');
+        this.replyBack.classList.remove('hide-reply');
+        this.slideReply.removeAttribute('checked');
 
         var totalMessages = res.data.messages.length;
         for (var i = 0; i < totalMessages; i++) {
@@ -1035,14 +1042,15 @@ var MessageComponent = function () {
       this.modal.classList.add('visible');
 
       this.clearSlides();
-      this.slideReply.classList.add('hide-reply');
+      this.replyBack.classList.add('hide-reply');
+      this.slideReply.setAttribute('checked', 'checked');
       this.postInput.placeholder = 'What\'s on your mind?';
     }
   }, {
     key: 'hide',
     value: function hide() {
-      //this.modal.classList.remove('visible');
-      //this.modal.classList.add('hidden');
+      this.modal.classList.remove('visible');
+      this.modal.classList.add('hidden');
     }
   }, {
     key: 'clearSlides',
@@ -1091,6 +1099,7 @@ var MessageComponent = function () {
 
       if (n > 1) {
         var labelOne = document.createElement('label');
+        labelOne.classList.add('nav-label');
         labelOne.classList.add('prev');
         labelOne.setAttribute('for', 'slide-' + (n - 1));
         labelOne.innerHTML = '&#x2039;';
@@ -1098,6 +1107,7 @@ var MessageComponent = function () {
       }
 
       var labelTwo = document.createElement('label');
+      labelTwo.classList.add('nav-label');
       labelTwo.classList.add('next');
       labelTwo.setAttribute('for', isLast ? 'slide-reply' : 'slide' + (n + 1));
       labelTwo.innerHTML = '&#x203a;';
@@ -2093,17 +2103,8 @@ var App = function () {
       }.bind(this));
     }
   }, {
-    key: 'registerPostButtonDomEvent',
-    value: function registerPostButtonDomEvent() {
-      document.getElementById('postButton').addEventListener('click', function (event) {
-        this.postComponent.show();
-      }.bind(this));
-    }
-  }, {
     key: 'init',
     value: function init() {
-      this.registerPostButtonDomEvent();
-
       this.addStars();
       this.addNodes();
       this.addToDom();
