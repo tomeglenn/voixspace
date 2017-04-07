@@ -967,7 +967,7 @@ var MessageComponent = function () {
     setTimeout(function () {
       this.explanationText.classList.add('hidden');
       this.explanationText.classList.remove('visible');
-    }.bind(this), 3000);
+    }.bind(this), 5000);
 
     this.postButton.addEventListener('click', function (event) {
       this.showReplyOnly();
