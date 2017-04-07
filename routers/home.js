@@ -5,7 +5,10 @@ router.get('/', function (req, res) {
   res.render('index');
 });
 
-router.get('/:id', function (req, res) {
+router.get('/:id', function (req, res, next) {
+  if (req.params.id == 'favicon.ico') {
+    return next();
+  }
   res.render(req.params.id || 'index');
 });
 
