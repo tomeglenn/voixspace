@@ -4,7 +4,7 @@ var bodyParser = require('body-parser');
 var twig = require('twig');
 var mongoose = require('mongoose');
 var port = process.env.PORT || 1337;
-var db = process.env.MONGODB || 'mongodb://localhost/voix';
+var db = process.env.MONGODB_URI || 'mongodb://localhost/voix';
 
 var homeRouter = require('./routers/home');
 var apiRouter = require('./routers/api');
