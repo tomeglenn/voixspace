@@ -10,22 +10,39 @@
         </span>
       </a>
   </div>
-  <div id="postMessageModal" class="overlay hidden">
-    <div class="modal">
-      <div class="table-align">
-        <input id="postInput" type="text" />
-      </div>
-    </div>
-  </div>
 
   <div id="showMessageModal" class="overlay hidden">
     <div class="modal">
-      <div id="message" class="table-align"></div>
+
+      <div id="closeButtonContainer">
+          <a href="#" id="closeButton">
+            <span class="fa-stack fa-lg">
+              <i class="fa fa-circle fa-stack-2x"></i>
+              <i class="fa fa-times fa-stack-1x fa-inverse"></i>
+            </span>
+          </a>
+      </div>
+
+      <ul id="slides" class="slides">
+        <div class="form-wrapper">
+          <input type="radio" name="radio-btn" id="slide-reply" />
+          <li class="slide-container">
+            <div class="slide">
+              <div style="width: 100%; padding: 0 200px;">
+                <input type="hidden" id="postId" />
+                <input type="text" placeholder="What's on your mind?" id="postInput" />
+              </div>
+            </div>
+            <div class="nav">
+              <label class="nav-label prev" id="reply-back">&#x2039;</label>
+            </div>
+          </li>
+        </div>
+      </ul>
     </div>
   </div>
-  
+
   <script src="/public/js/Detector.js"></script>
-  <script src="/public/js/Bird.js"></script>
   <script src="/public/js/Boid.js"></script>
   <script src="/dist/bundle.js"></script>
 {% endblock %}

@@ -46,9 +46,8 @@ export default class MessageComponent {
       this.clearSlides();
       this.postInput.placeholder = 'What would you like to add?';
       this.postId.value = res.data._id;
-      console.log(res.data);
       this.replyBack.classList.remove('hide-reply');
-      this.slideReply.removeAttribute('checked');
+      this.slideReply.checked = false;
 
       var totalMessages = res.data.messages.length;
       for (var i = 0; i < totalMessages; i++) {
@@ -70,7 +69,7 @@ export default class MessageComponent {
 
     this.clearSlides();
     this.replyBack.classList.add('hide-reply');
-    this.slideReply.setAttribute('checked', 'checked');
+    this.slideReply.checked = true;
     this.postInput.placeholder = 'What\'s on your mind?';
     this.postId.value = '';
   }
