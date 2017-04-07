@@ -1970,6 +1970,7 @@ var radius = 100,
 var nodes = [];
 var boids = [];
 var boid;
+var selectedNode;
 
 var App = function () {
   function App() {
@@ -2041,18 +2042,23 @@ var App = function () {
     value: function render() {
       requestAnimationFrame(this.render.bind(this));
 
-      theta += 0.01;
-      this.camera.position.x = radius * Math.sin(THREE.Math.degToRad(theta));
-      this.camera.position.y = radius * Math.sin(THREE.Math.degToRad(theta));
-      this.camera.position.z = radius * Math.cos(THREE.Math.degToRad(theta));
+      if (selectedNode === null) {
+        theta += 0.01;
+        this.camera.position.x = radius * Math.sin(THREE.Math.degToRad(theta));
+        this.camera.position.y = radius * Math.sin(THREE.Math.degToRad(theta));
+        this.camera.position.z = radius * Math.cos(THREE.Math.degToRad(theta));
+        theta += 0.01;
+      }
 
       for (var i = 0, il = nodes.length; i < il; i++) {
-        boid = boids[i];
-        boid.run(boids);
         var node = nodes[i];
-        node.position.copy(boids[i].position);
-        node.rotation.x += 0.01;
-        node.rotation.y += 0.005;
+        if (node !== selectedNode) {
+          boid = boids[i];
+          boid.run(boids);
+          node.position.copy(boids[i].position);
+          node.rotation.x += 0.01;
+          node.rotation.y += 0.005;
+        }
       }
 
       this.renderer.render(this.scene, this.camera);
@@ -2068,6 +2074,14 @@ var App = function () {
       var domEvents = new THREEx.DomEvents(this.camera, this.renderer.domElement);
       domEvents.addEventListener(mesh, 'click', function (event) {
         this.messageComponent.show();
+      }.bind(this));
+      domEvents.addEventListener(mesh, 'mouseover', function (event) {
+        mesh.material.wireframe = false;
+        selectedNode = mesh;
+      }.bind(this));
+      domEvents.addEventListener(mesh, 'mouseout', function (event) {
+        mesh.material.wireframe = true;
+        selectedNode = null;
       }.bind(this));
     }
   }, {
