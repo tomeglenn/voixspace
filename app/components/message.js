@@ -42,6 +42,7 @@ export default class MessageComponent {
     .then(function (res) {
       this.modal.classList.remove('hidden');
       this.modal.classList.add('visible');
+      this.postButton.style.display = 'none';
 
       this.clearSlides();
       this.postInput.placeholder = 'What would you like to add?';
@@ -66,6 +67,7 @@ export default class MessageComponent {
   showReplyOnly() {
     this.modal.classList.remove('hidden');
     this.modal.classList.add('visible');
+    this.postButton.style.display = 'none';
 
     this.clearSlides();
     this.replyBack.classList.add('hide-reply');
@@ -77,6 +79,7 @@ export default class MessageComponent {
   hide() {
     this.modal.classList.remove('visible');
     this.modal.classList.add('hidden');
+    this.postButton.style.display = 'block';
   }
 
   clearSlides() {

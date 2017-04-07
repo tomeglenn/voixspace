@@ -43,19 +43,10 @@ export default class App {
   setMeshState(mesh, isActive){
     if(isActive){
       mesh.material.wireframe = false;
-      mesh.material.transparent = true;
-      mesh.material.opacity = 0.5;
-      mesh.geometry = new THREE.TorusKnotGeometry( 5, 5, 5, 2 );
-
       selectedNode = mesh;
     }
     else{
       mesh.material.wireframe = true;
-      mesh.material.transparent = false;
-      mesh.material.opacity = 1;
-      var size = (Math.random() * (5.0 - 2.0) + 2.0).toFixed(4);
-      mesh.geometry = new THREE.SphereGeometry(size, 6, 6);
-
       selectedNode = null;
     }
   }
@@ -94,7 +85,7 @@ export default class App {
 
         var size = (Math.random() * (5.0 - 2.0) + 2.0).toFixed(4);
         var color = colors[Math.floor(Math.random() * colors.length)];
-        var geometry = new THREE.SphereGeometry(size, 6, 6);
+        var geometry = new THREE.SphereBufferGeometry(size, 6, 6);
         var material = new THREE.MeshBasicMaterial({ color: color, side: THREE.DoubleSide, wireframe: true });
 
         var node = nodes[ i ] = new THREE.Mesh(geometry, material);
@@ -103,14 +94,18 @@ export default class App {
       }
   }
 
+  addLighting() {
+    this.directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    this.directionalLight.position.set(100, 100, 50);
+    this.scene.add(this.directionalLight);
+  }
+
   render(){
       requestAnimationFrame(this.render.bind(this));
 
-      if(selectedNode == null){
-        theta += 0.01;
-        this.camera.position.x = radius * Math.sin( THREE.Math.degToRad( theta ) );
-        this.camera.position.y = radius * Math.sin( THREE.Math.degToRad( theta ) );
-        this.camera.position.z = radius * Math.cos( THREE.Math.degToRad( theta ) );
+      if(selectedNode == null) {
+        this.camera.rotation.z += 0.0002;
+        this.camera.rotation.y += 0.0001;
       }
 
       for ( var i = 0, il = nodes.length; i < il; i++ ) {
@@ -159,6 +154,7 @@ export default class App {
   init() {
     this.addStars();
     this.addNodes();
+    this.addLighting();
     this.addToDom();
     this.render();
   }

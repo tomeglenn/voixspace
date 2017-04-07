@@ -986,6 +986,7 @@ var MessageComponent = function () {
       (0, _api.getMessage)().then(function (res) {
         this.modal.classList.remove('hidden');
         this.modal.classList.add('visible');
+        this.postButton.style.display = 'none';
 
         this.clearSlides();
         this.postInput.placeholder = 'What would you like to add?';
@@ -1009,6 +1010,7 @@ var MessageComponent = function () {
     value: function showReplyOnly() {
       this.modal.classList.remove('hidden');
       this.modal.classList.add('visible');
+      this.postButton.style.display = 'none';
 
       this.clearSlides();
       this.replyBack.classList.add('hide-reply');
@@ -1021,6 +1023,7 @@ var MessageComponent = function () {
     value: function hide() {
       this.modal.classList.remove('visible');
       this.modal.classList.add('hidden');
+      this.postButton.style.display = 'block';
     }
   }, {
     key: 'clearSlides',
@@ -2009,18 +2012,9 @@ var App = function () {
     value: function setMeshState(mesh, isActive) {
       if (isActive) {
         mesh.material.wireframe = false;
-        mesh.material.transparent = true;
-        mesh.material.opacity = 0.5;
-        mesh.geometry = new THREE.TorusKnotGeometry(5, 5, 5, 2);
-
         selectedNode = mesh;
       } else {
         mesh.material.wireframe = true;
-        mesh.material.transparent = false;
-        mesh.material.opacity = 1;
-        var size = (Math.random() * (5.0 - 2.0) + 2.0).toFixed(4);
-        mesh.geometry = new THREE.SphereGeometry(size, 6, 6);
-
         selectedNode = null;
       }
     }
@@ -2055,7 +2049,7 @@ var App = function () {
 
         var size = (Math.random() * (5.0 - 2.0) + 2.0).toFixed(4);
         var color = colors[Math.floor(Math.random() * colors.length)];
-        var geometry = new THREE.SphereGeometry(size, 6, 6);
+        var geometry = new THREE.SphereBufferGeometry(size, 6, 6);
         var material = new THREE.MeshBasicMaterial({ color: color, side: THREE.DoubleSide, wireframe: true });
 
         var node = nodes[i] = new THREE.Mesh(geometry, material);
@@ -2064,15 +2058,20 @@ var App = function () {
       }
     }
   }, {
+    key: 'addLighting',
+    value: function addLighting() {
+      this.directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+      this.directionalLight.position.set(100, 100, 50);
+      this.scene.add(this.directionalLight);
+    }
+  }, {
     key: 'render',
     value: function render() {
       requestAnimationFrame(this.render.bind(this));
 
       if (selectedNode == null) {
-        theta += 0.01;
-        this.camera.position.x = radius * Math.sin(THREE.Math.degToRad(theta));
-        this.camera.position.y = radius * Math.sin(THREE.Math.degToRad(theta));
-        this.camera.position.z = radius * Math.cos(THREE.Math.degToRad(theta));
+        this.camera.rotation.z += 0.0002;
+        this.camera.rotation.y += 0.0001;
       }
 
       for (var i = 0, il = nodes.length; i < il; i++) {
@@ -2122,6 +2121,7 @@ var App = function () {
     value: function init() {
       this.addStars();
       this.addNodes();
+      this.addLighting();
       this.addToDom();
       this.render();
     }
