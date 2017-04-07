@@ -142,6 +142,19 @@ export default class App {
       this.messageComponent.show();
     }.bind(this));
 
+    domEvents.addEventListener(mesh, "touchstart", function (event) {
+      mesh.material.transparent = true;
+      mesh.material.opacity = 0;
+      for(var i = 0; i < nodes.length; i++){
+        if(nodes[i] == selectedNode)
+        {
+          this.setBoidPosition(boids[i]);
+        }
+      }
+      this.setMeshState(mesh, false);
+      this.messageComponent.show();
+    }.bind(this));
+
     domEvents.addEventListener(mesh, 'mouseover', function (event) {
       this.setMeshState(mesh, true);
     }.bind(this));
