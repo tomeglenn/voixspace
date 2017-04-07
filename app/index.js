@@ -1,5 +1,4 @@
 import MessageComponent from './components/message';
-import PostComponent from './components/post';
 
 var mouseX = 0;
 var mouseY = 0;
@@ -29,7 +28,6 @@ export default class App {
     var windowResize = new THREEx.WindowResize(this.renderer, this.camera);
 
     this.messageComponent = new MessageComponent();
-    this.postComponent = new PostComponent();
   }
 
   addStars(){

@@ -1,5 +1,9 @@
 {% extends "layout.html" %}
 
+{% block head %}
+  <link rel="stylesheet" href="/public/css/slides.css" />
+{% endblock %}
+
 {% block body %}
   <div id="app"></div>
   <div id="postButtonContainer">
@@ -10,20 +14,28 @@
         </span>
       </a>
   </div>
-  <div id="postMessageModal" class="overlay hidden">
-    <div class="modal">
-      <span class="table-align">
-        <input id="postInput" type="text" />
-      </span>
-    </div>
-  </div>
 
   <div id="showMessageModal" class="overlay hidden">
     <div class="modal">
-      <span id="message" class="table-align"></span>
+      <ul id="slides" class="slides">
+        <div class="form-wrapper">
+          <input type="radio" name="radio-btn" id="slide-reply" />
+          <li class="slide-container">
+            <div class="slide">
+              <div style="width: 100%; padding: 0 200px;">
+                <input type="text" placeholder="What's on your mind?" id="postInput" />
+              </div>
+            </div>
+            <div class="nav">
+              <label for="slide-2" class="prev" id="reply-back">&#x2039;</label>
+            </div>
+          </li>
+        </div>
+      </ul>
+      <!-- <span id="message" class="table-align"></span> -->
     </div>
   </div>
-  
+
   <script src="/public/js/Detector.js"></script>
   <script src="/public/js/Bird.js"></script>
   <script src="/public/js/Boid.js"></script>
