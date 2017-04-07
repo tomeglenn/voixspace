@@ -46,13 +46,14 @@ export default class MessageComponent {
   }
 
   show() {
+    this.clearSlides();
+
     getMessage()
     .then(function (res) {
       this.modal.classList.remove('hidden');
       this.modal.classList.add('visible');
       this.postButton.style.display = 'none';
 
-      this.clearSlides();
       this.postInput.placeholder = 'What would you like to add?';
       this.postId.value = res.data._id;
       this.replyBack.classList.remove('hide-reply');
