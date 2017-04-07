@@ -1,3 +1,4 @@
+import moment from 'moment';
 import { getMessage, postMessage, putMessage } from '../resources/api';
 
 export default class MessageComponent {
@@ -53,7 +54,7 @@ export default class MessageComponent {
       var totalMessages = res.data.messages.length;
       for (var i = 0; i < totalMessages; i++) {
         var message = res.data.messages[i];
-        this.addSlide(i+1, message, i == 0, i == totalMessages - 1)
+        this.addSlide(i+1, totalMessages, message, i == 0, i == totalMessages - 1)
       }
 
       this.replyBack.setAttribute('for', 'slide-' + (totalMessages));
@@ -91,7 +92,7 @@ export default class MessageComponent {
     }
   }
 
-  addSlide(n, message, checked, isLast) {
+  addSlide(n, totalMessages, message, checked, isLast) {
     var slideWrapper = document.createElement('div');
     slideWrapper.classList.add('slide-wrapper');
     this.slides.appendChild(slideWrapper);
@@ -115,7 +116,16 @@ export default class MessageComponent {
 
     var slide = document.createElement('div');
     slide.classList.add('slide');
-    slide.textContent = message.body;
+
+    var count = document.createElement('span');
+    count.classList.add('message-count');
+    count.textContent = 'Message ' + n + ' of ' + totalMessages + ' - written ' + moment(message.date).fromNow();
+    slide.appendChild(count);
+
+    var body = document.createElement('span');
+    body.textContent = message.body;
+    slide.appendChild(body);
+
     slideContainer.appendChild(slide);
 
     var navContainer = document.createElement('div');
