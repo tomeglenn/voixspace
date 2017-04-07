@@ -74,12 +74,14 @@ export default class MessageComponent {
     this.slideReply.checked = true;
     this.postInput.placeholder = 'What\'s on your mind?';
     this.postId.value = '';
+    this.postInput.focus();
   }
 
   hide() {
     this.modal.classList.remove('visible');
     this.modal.classList.add('hidden');
     this.postButton.style.display = 'block';
+    this.postInput.value = '';
   }
 
   clearSlides() {
@@ -139,6 +141,12 @@ export default class MessageComponent {
     labelTwo.setAttribute('for', isLast ? 'slide-reply' : 'slide-' + (n+1));
     labelTwo.innerHTML = '&#x203a;';
     nav.appendChild(labelTwo);
+
+    if (isLast) {
+      nav.addEventListener('click', function (event) {
+        this.postInput.focus();
+      }.bind(this));
+    }
   }
 
   setAttributes(element, attributes) {

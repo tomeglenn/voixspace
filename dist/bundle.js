@@ -1017,6 +1017,7 @@ var MessageComponent = function () {
       this.slideReply.checked = true;
       this.postInput.placeholder = 'What\'s on your mind?';
       this.postId.value = '';
+      this.postInput.focus();
     }
   }, {
     key: 'hide',
@@ -1024,6 +1025,7 @@ var MessageComponent = function () {
       this.modal.classList.remove('visible');
       this.modal.classList.add('hidden');
       this.postButton.style.display = 'block';
+      this.postInput.value = '';
     }
   }, {
     key: 'clearSlides',
@@ -1085,6 +1087,12 @@ var MessageComponent = function () {
       labelTwo.setAttribute('for', isLast ? 'slide-reply' : 'slide-' + (n + 1));
       labelTwo.innerHTML = '&#x203a;';
       nav.appendChild(labelTwo);
+
+      if (isLast) {
+        nav.addEventListener('click', function (event) {
+          this.postInput.focus();
+        }.bind(this));
+      }
     }
   }, {
     key: 'setAttributes',
