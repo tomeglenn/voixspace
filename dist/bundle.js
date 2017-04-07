@@ -750,7 +750,7 @@ module.exports = function bind(fn, thisArg) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.postMessage = exports.getMessage = undefined;
+exports.putMessage = exports.postMessage = exports.getMessage = undefined;
 
 var _axios = __webpack_require__(11);
 
@@ -772,8 +772,15 @@ function postMessage(message) {
   });
 }
 
+function putMessage(id, message) {
+  return _axios2.default.put(ENDPOINTS.MESSAGE + '/' + id, {
+    message: message
+  });
+}
+
 exports.getMessage = getMessage;
 exports.postMessage = postMessage;
+exports.putMessage = putMessage;
 
 /***/ }),
 /* 8 */
@@ -985,6 +992,7 @@ var MessageComponent = function () {
     this.modal = document.getElementById('showMessageModal');
     this.slides = document.getElementById('slides');
     this.postInput = document.getElementById('postInput');
+    this.postId = document.getElementById('postId');
     this.replyBack = document.getElementById('reply-back');
     this.slideReply = document.getElementById('slide-reply');
     this.postButton = document.getElementById('postButton');
@@ -999,9 +1007,11 @@ var MessageComponent = function () {
     }.bind(this));
 
     this.postInput.addEventListener('keyup', function (event) {
-      console.log('SENDING');
       if (event.keyCode == 13) {
-        (0, _api.postMessage)(this.postInput.value).then(function (res) {
+
+        var promise = this.postId.value != '' ? (0, _api.putMessage)(this.postId.value, this.postInput.value) : (0, _api.postMessage)(this.postInput.value);
+
+        promise.then(function (res) {
           this.postInput.value = '';
           this.postInput.placeholder = 'Message successfully sent!';
           this.hide();
@@ -1021,6 +1031,8 @@ var MessageComponent = function () {
 
         this.clearSlides();
         this.postInput.placeholder = 'What would you like to add?';
+        this.postId.value = res.data._id;
+        console.log(res.data);
         this.replyBack.classList.remove('hide-reply');
         this.slideReply.removeAttribute('checked');
 
@@ -1045,6 +1057,7 @@ var MessageComponent = function () {
       this.replyBack.classList.add('hide-reply');
       this.slideReply.setAttribute('checked', 'checked');
       this.postInput.placeholder = 'What\'s on your mind?';
+      this.postId.value = '';
     }
   }, {
     key: 'hide',
@@ -1109,7 +1122,7 @@ var MessageComponent = function () {
       var labelTwo = document.createElement('label');
       labelTwo.classList.add('nav-label');
       labelTwo.classList.add('next');
-      labelTwo.setAttribute('for', isLast ? 'slide-reply' : 'slide' + (n + 1));
+      labelTwo.setAttribute('for', isLast ? 'slide-reply' : 'slide-' + (n + 1));
       labelTwo.innerHTML = '&#x203a;';
       nav.appendChild(labelTwo);
     }

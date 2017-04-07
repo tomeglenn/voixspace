@@ -1,10 +1,11 @@
-import { getMessage, postMessage } from '../resources/api';
+import { getMessage, postMessage, putMessage } from '../resources/api';
 
 export default class MessageComponent {
   constructor() {
     this.modal = document.getElementById('showMessageModal');
     this.slides = document.getElementById('slides');
     this.postInput = document.getElementById('postInput');
+    this.postId = document.getElementById('postId');
     this.replyBack = document.getElementById('reply-back');
     this.slideReply = document.getElementById('slide-reply');
     this.postButton = document.getElementById('postButton');
@@ -19,9 +20,11 @@ export default class MessageComponent {
     }.bind(this));
 
     this.postInput.addEventListener('keyup', function (event) {
-      console.log('SENDING');
       if (event.keyCode == 13) {
-        postMessage(this.postInput.value)
+
+        var promise = this.postId.value != '' ? putMessage(this.postId.value, this.postInput.value) : postMessage(this.postInput.value);
+
+        promise
         .then(function (res) {
           this.postInput.value = '';
           this.postInput.placeholder = 'Message successfully sent!';
@@ -42,6 +45,8 @@ export default class MessageComponent {
 
       this.clearSlides();
       this.postInput.placeholder = 'What would you like to add?';
+      this.postId.value = res.data._id;
+      console.log(res.data);
       this.replyBack.classList.remove('hide-reply');
       this.slideReply.removeAttribute('checked');
 
@@ -67,6 +72,7 @@ export default class MessageComponent {
     this.replyBack.classList.add('hide-reply');
     this.slideReply.setAttribute('checked', 'checked');
     this.postInput.placeholder = 'What\'s on your mind?';
+    this.postId.value = '';
   }
 
   hide() {
@@ -128,7 +134,7 @@ export default class MessageComponent {
     var labelTwo = document.createElement('label');
     labelTwo.classList.add('nav-label');
     labelTwo.classList.add('next');
-    labelTwo.setAttribute('for', isLast ? 'slide-reply' : 'slide' + (n+1));
+    labelTwo.setAttribute('for', isLast ? 'slide-reply' : 'slide-' + (n+1));
     labelTwo.innerHTML = '&#x203a;';
     nav.appendChild(labelTwo);
   }
