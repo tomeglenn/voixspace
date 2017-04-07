@@ -11,6 +11,13 @@ export default class MessageComponent {
     this.slideReply = document.getElementById('slide-reply');
     this.postButton = document.getElementById('postButton');
     this.closeButton = document.getElementById('closeButton');
+    this.explanationText = document.getElementById('explanation');
+
+    var self = this;
+    setTimeout(function () {
+      this.explanationText.classList.add('hidden');
+      this.explanationText.classList.remove('visible');
+    }.bind(this), 3000);
 
     this.postButton.addEventListener('click', function (event) {
       this.showReplyOnly();
