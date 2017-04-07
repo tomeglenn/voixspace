@@ -1110,7 +1110,7 @@ var MessageComponent = function () {
       labelTwo.innerHTML = '&#x203a;';
       nav.appendChild(labelTwo);
 
-      if (isLast) {
+      if (n > 1 && isLast) {
         nav.addEventListener('click', function (event) {
           this.postInput.focus();
         }.bind(this));
