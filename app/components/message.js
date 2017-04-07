@@ -159,8 +159,8 @@ export default class MessageComponent {
     labelTwo.innerHTML = '&#x203a;';
     nav.appendChild(labelTwo);
 
-    if (n > 1 && isLast) {
-      nav.addEventListener('click', function (event) {
+    if (isLast) {
+      labelTwo.addEventListener('click', function (event) {
         this.postInput.focus();
       }.bind(this));
     }
