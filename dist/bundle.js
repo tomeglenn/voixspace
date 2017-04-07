@@ -750,7 +750,7 @@ module.exports = function bind(fn, thisArg) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.postMessage = exports.getMessage = undefined;
+exports.putMessage = exports.postMessage = exports.getMessage = undefined;
 
 var _axios = __webpack_require__(11);
 
@@ -772,8 +772,15 @@ function postMessage(message) {
   });
 }
 
+function putMessage(id, message) {
+  return _axios2.default.put(ENDPOINTS.MESSAGE + '/' + id, {
+    message: message
+  });
+}
+
 exports.getMessage = getMessage;
 exports.postMessage = postMessage;
+exports.putMessage = putMessage;
 
 /***/ }),
 /* 8 */
@@ -983,79 +990,28 @@ var MessageComponent = function () {
     _classCallCheck(this, MessageComponent);
 
     this.modal = document.getElementById('showMessageModal');
-    this.message = document.getElementById('message');
-
-    this.modal.addEventListener('click', function (event) {
-      this.hide();
-    }.bind(this));
-  }
-
-  _createClass(MessageComponent, [{
-    key: 'show',
-    value: function show() {
-      (0, _api.getMessage)().then(function (res) {
-        this.modal.classList.remove('hidden');
-        this.modal.classList.add('visible');
-
-        this.message.innerHTML = '';
-        res.data.messages.forEach(function (message) {
-          var div = document.createElement('span');
-          div.classList.add('message');
-          div.textContent = message.body;
-          document.getElementById('message').appendChild(div);
-        });
-      }.bind(this)).catch(function (err) {
-        console.log(err);
-      });
-    }
-  }, {
-    key: 'hide',
-    value: function hide() {
-      this.modal.classList.remove('visible');
-      this.modal.classList.add('hidden');
-    }
-  }]);
-
-  return MessageComponent;
-}();
-
-exports.default = MessageComponent;
-
-/***/ }),
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _api = __webpack_require__(7);
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var PostComponent = function () {
-  function PostComponent() {
-    _classCallCheck(this, PostComponent);
-
-    this.modal = document.getElementById('postMessageModal');
+    this.slides = document.getElementById('slides');
     this.postInput = document.getElementById('postInput');
+    this.postId = document.getElementById('postId');
+    this.replyBack = document.getElementById('reply-back');
+    this.slideReply = document.getElementById('slide-reply');
+    this.postButton = document.getElementById('postButton');
+    this.closeButton = document.getElementById('closeButton');
 
-    this.postInput.addEventListener('click', function (event) {
-      event.cancelBubble = true;
-    });
+    this.postButton.addEventListener('click', function (event) {
+      this.showReplyOnly();
+    }.bind(this));
 
-    this.modal.addEventListener('click', function (event) {
+    this.closeButton.addEventListener('click', function (event) {
       this.hide();
     }.bind(this));
 
     this.postInput.addEventListener('keyup', function (event) {
       if (event.keyCode == 13) {
-        (0, _api.postMessage)(this.postInput.value).then(function (res) {
+
+        var promise = this.postId.value != '' ? (0, _api.putMessage)(this.postId.value, this.postInput.value) : (0, _api.postMessage)(this.postInput.value);
+
+        promise.then(function (res) {
           this.postInput.value = '';
           this.postInput.placeholder = 'Message successfully sent!';
           this.hide();
@@ -1066,17 +1022,42 @@ var PostComponent = function () {
     }.bind(this));
   }
 
-  _createClass(PostComponent, [{
+  _createClass(MessageComponent, [{
     key: 'show',
     value: function show() {
+      (0, _api.getMessage)().then(function (res) {
+        this.modal.classList.remove('hidden');
+        this.modal.classList.add('visible');
+
+        this.clearSlides();
+        this.postInput.placeholder = 'What would you like to add?';
+        this.postId.value = res.data._id;
+        console.log(res.data);
+        this.replyBack.classList.remove('hide-reply');
+        this.slideReply.removeAttribute('checked');
+
+        var totalMessages = res.data.messages.length;
+        for (var i = 0; i < totalMessages; i++) {
+          var message = res.data.messages[i];
+          this.addSlide(i + 1, message, i == 0, i == totalMessages - 1);
+        }
+
+        this.replyBack.setAttribute('for', 'slide-' + totalMessages);
+      }.bind(this)).catch(function (err) {
+        console.log(err);
+      });
+    }
+  }, {
+    key: 'showReplyOnly',
+    value: function showReplyOnly() {
       this.modal.classList.remove('hidden');
       this.modal.classList.add('visible');
 
+      this.clearSlides();
+      this.replyBack.classList.add('hide-reply');
+      this.slideReply.setAttribute('checked', 'checked');
       this.postInput.placeholder = 'What\'s on your mind?';
-
-      setTimeout(function () {
-        this.postInput.focus();
-      }, 500);
+      this.postId.value = '';
     }
   }, {
     key: 'hide',
@@ -1084,14 +1065,83 @@ var PostComponent = function () {
       this.modal.classList.remove('visible');
       this.modal.classList.add('hidden');
     }
+  }, {
+    key: 'clearSlides',
+    value: function clearSlides() {
+      var slideWrappers = document.getElementsByClassName('slide-wrapper');
+      for (var i = 0; i < slideWrappers.length; i++) {
+        slideWrappers[i].remove();
+      }
+    }
+  }, {
+    key: 'addSlide',
+    value: function addSlide(n, message, checked, isLast) {
+      var slideWrapper = document.createElement('div');
+      slideWrapper.classList.add('slide-wrapper');
+      this.slides.appendChild(slideWrapper);
+
+      var radio = document.createElement('input');
+      this.setAttributes(radio, {
+        'type': 'radio',
+        'name': 'radio-btn',
+        'id': 'slide-' + n
+      });
+
+      if (checked) {
+        radio.setAttribute('checked', 'checked');
+      }
+
+      var slideContainer = document.createElement('li');
+      slideContainer.classList.add('slide-container');
+
+      slideWrapper.appendChild(radio);
+      slideWrapper.appendChild(slideContainer);
+
+      var slide = document.createElement('div');
+      slide.classList.add('slide');
+      slide.textContent = message.body;
+      slideContainer.appendChild(slide);
+
+      var navContainer = document.createElement('div');
+      navContainer.classList.add('nav-container');
+      slideContainer.appendChild(navContainer);
+
+      var nav = document.createElement('div');
+      nav.classList.add('nav');
+      navContainer.appendChild(nav);
+
+      if (n > 1) {
+        var labelOne = document.createElement('label');
+        labelOne.classList.add('nav-label');
+        labelOne.classList.add('prev');
+        labelOne.setAttribute('for', 'slide-' + (n - 1));
+        labelOne.innerHTML = '&#x2039;';
+        nav.appendChild(labelOne);
+      }
+
+      var labelTwo = document.createElement('label');
+      labelTwo.classList.add('nav-label');
+      labelTwo.classList.add('next');
+      labelTwo.setAttribute('for', isLast ? 'slide-reply' : 'slide-' + (n + 1));
+      labelTwo.innerHTML = '&#x203a;';
+      nav.appendChild(labelTwo);
+    }
+  }, {
+    key: 'setAttributes',
+    value: function setAttributes(element, attributes) {
+      for (var key in attributes) {
+        element.setAttribute(key, attributes[key]);
+      }
+    }
   }]);
 
-  return PostComponent;
+  return MessageComponent;
 }();
 
-exports.default = PostComponent;
+exports.default = MessageComponent;
 
 /***/ }),
+/* 10 */,
 /* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1951,10 +2001,6 @@ var _message = __webpack_require__(9);
 
 var _message2 = _interopRequireDefault(_message);
 
-var _post = __webpack_require__(10);
-
-var _post2 = _interopRequireDefault(_post);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -1989,7 +2035,6 @@ var App = function () {
     var windowResize = new THREEx.WindowResize(this.renderer, this.camera);
 
     this.messageComponent = new _message2.default();
-    this.postComponent = new _post2.default();
   }
 
   _createClass(App, [{
@@ -2071,17 +2116,8 @@ var App = function () {
       }.bind(this));
     }
   }, {
-    key: 'registerPostButtonDomEvent',
-    value: function registerPostButtonDomEvent() {
-      document.getElementById('postButton').addEventListener('click', function (event) {
-        this.postComponent.show();
-      }.bind(this));
-    }
-  }, {
     key: 'init',
     value: function init() {
-      this.registerPostButtonDomEvent();
-
       this.addStars();
       this.addNodes();
       this.addToDom();

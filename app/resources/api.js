@@ -14,4 +14,10 @@ function postMessage(message) {
   });
 }
 
-export { getMessage, postMessage };
+function putMessage(id, message) {
+  return axios.put(ENDPOINTS.MESSAGE + '/' + id, {
+    message: message
+  });
+}
+
+export { getMessage, postMessage, putMessage };
