@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
 var Message = require('../models/message');
-var profanity = require('profanity-censor');
+var swearjar = require('swearjar');
 
 router.use(function (req, res, next) {
   if (!mongoose.connection.readyState) {
@@ -30,7 +30,7 @@ router.get('/message', function (req, res) {
 
 router.post('/message', function (req, res) {
   var message = new Message();
-  message.messages.push({ body: profanity.filter(req.body.message) });
+  message.messages.push({ body: swearjar.censor(req.body.message) });
 
   message.save(function (err, message) {
     if (err) {
@@ -47,7 +47,7 @@ router.put('/message/:id', function (req, res) {
       return res.status(404).json({ status: 'error', message: err });
     }
 
-    message.messages.push({ body: profanity.filter(req.body.message) });
+    message.messages.push({ body: swearjar.censor(req.body.message) });
     message.save(function (err, message) {
       if (err) {
         return res.status(400).json({ status: 'error', message: err });
